@@ -1,0 +1,223 @@
+package recfun
+
+import scala.annotation.tailrec
+import java.lang.IllegalArgumentException
+import java.util.Arrays
+import java.util.concurrent.atomic.LongAdder
+
+object Main {
+  def main(args: Array[String]) {
+    // println("Pascal's Triangle")
+    // for (row <- 0 to 10) {
+    //   for (col <- 0 to row)
+    //     print(pascal(col, row) + " ")
+    //   println()
+    // }
+    // Console println "countChange(300,List(500,5,50,100,20,200,10)) : ".format(countChange(300,List(500,5,50,100,20,200,10)))
+
+  }
+
+  /**
+   * Exercise 1
+   */
+  def pascal(c: Int, r: Int): Int = {
+    val minChild = if(r > (c << 1)) c else r - c
+    @tailrec
+    def next(counter: Int, container: Array[Int]): Int = {
+      if(counter >= r) container(minChild)
+      else {
+        container.tail.zipWithIndex.foreach {case(e: Int, i: Int) =>
+          val inc = i + 1
+          container(inc) = container(inc) + container(i)
+        }
+        next(counter + 1, container)
+      }
+    }
+
+    val container = new Array[Int](r + 1)
+    Arrays.fill(container, 1)
+    next(1, container)
+  }
+
+  def pascal_factorial2(c: Int, r: Int): Int = {
+    val child: Int = if(r > (c << 1)) c else r - c
+
+    @tailrec
+    def next(c: Int, r: Int, accC: Int, accR: Int): Int = {
+      if(c == 0) accR / accC
+      else if(c == 1) accR * r / (accC * c)
+      else {
+        val accC2 = accC * ((c * (c - 1)) >> 1)
+        val accR2 = accR * ((r * (r - 1)) >> 1)
+
+        next(c - 2, r - 2, accC2, accR2)
+      }
+    }
+
+    next(child, r, 1, 1)
+  }
+
+  def pascal_factorial(c: Int, r: Int): Int = {
+    val child: Int = if(r > (c << 1)) c else r - c
+    factorial(r)(child) / factorial(child)()
+  }
+
+  def factorial(n: Int)(times: Int = n): Int = {
+    // guard
+    if(n < times) throw new IllegalArgumentException(" n > times")
+    else if(n < 0) throw new IllegalArgumentException(" n >= 0")
+
+    @tailrec
+    def next(n: Int, times: Int, acc: Int): Int = times match {
+      case 0 => acc
+      case _ => next(n - 1, times - 1, acc * n)
+    }
+
+    next(n, times, 1)
+  }
+
+  /**
+   * Exercise 2
+   */
+  def balance(chars: List[Char]): Boolean = {
+    // guard
+    if(chars.isEmpty) return true
+
+    @tailrec
+    def next(h: Char, tail: List[Char], counter: Int): Boolean = {
+      val lastCounter = {
+        if(h == '(') counter + 1
+        else if( h == ')') counter - 1
+        else counter
+
+        if(counter == 0) false
+        else next(tail.head, tail.tail, lastCounter)
+      }else next(tail.head, tail.tail, lastCounter)
+    }
+    next(chars.head, chars.tail, 0)
+  }
+
+  /**
+   * Exercise 3
+   */
+  def countChange(money: Int, coins: List[Int]): Int = {
+    // guard
+    if(coins.isEmpty) return 0
+    // TODO duplicate
+
+    val sorted = coins.sorted.reverse.toArray
+    val coinsLen = coins.length
+    val coinCounters = new Array[Int](sorted.length)
+    Arrays.fill(coinCounters, 0)
+    coinCounters(0) = 1 // avoiding stop
+
+    case class Key(val num: Int, val numbers: Array[Int])
+
+    @tailrec
+    def next(rest: Int, cntIdx: Int, counters: Array[Int], inCoinLimit: Int, acc: Int): Int = {
+      // Console println "money %d, rest %d, cntIdx %d, inCoinLimit %d, acc %d".format(money, rest, cntIdx, inCoinLimit, acc)
+      val nowCoin = sorted(cntIdx)
+      val nowCoinLimit: Int = inCoinLimit match {
+        case -1 => rest / nowCoin
+        case _ => inCoinLimit
+      }
+      val consume = nowCoin * nowCoinLimit
+      val tmpRest = rest - consume
+      counters(cntIdx) = nowCoinLimit
+      val childIdx = cntIdx + 1
+      val parentIdx = cntIdx - 1
+      // Console println "money %d, tmp %d, nowCoin %d, nowCoinLimit %d".format(money, tmpRest, nowCoin, nowCoinLimit)
+
+      if(inCoinLimit == 0){
+        // Console println "0"
+        if(childIdx == 0){
+          acc
+        }else if(childIdx != coinsLen){
+          counters(cntIdx) = nowCoinLimit
+          next(rest, childIdx, counters, - 1, acc)
+        }else {
+          // Console println "acc %d".format(acc)
+          acc
+        }
+      }else if(tmpRest == 0) {
+        // Console print "OK "
+        // Console println rest + " : " + (counters.toList.toString())
+        val nextAcc = acc + 1
+        if(nowCoinLimit > 0) {
+          if(childIdx != coinsLen){
+            // Console println "-another ready for child"
+            next(rest, cntIdx, counters, nowCoinLimit - 1, nextAcc)
+          }else {//if(parentIdx >= 0){
+            if(parentIdx == 0 && counters(parentIdx) == 0){
+              // Console println "-end0 %d".format(nextAcc)
+              nextAcc
+            }else {
+              // Console println "-decrement ancestor"
+              counters(cntIdx) = 0
+              // Console println "parentIdx : %d".format(parentIdx)
+              val notZeroAncCounters = (for(idx <- parentIdx to (0, -1)) yield idx).filter(counters(_) > 0)
+              // Console println notZeroAncCounters
+              if(notZeroAncCounters.isEmpty){
+                // Console println "-end1 %d".format(nextAcc)
+                nextAcc
+              }else {
+                val recoverIdx = notZeroAncCounters.head
+                val recover = counters(recoverIdx) match {
+                  case 0 => consume
+                  case _ => consume + sorted(recoverIdx)
+                }
+                // Console println "recoverIdx : %d, rocover : %d".format(recoverIdx, recover)
+                counters(recoverIdx) -= 1
+                next(recover, recoverIdx + 1, counters, -1, nextAcc)
+              }
+            }
+          }
+        }
+        else if(childIdx != coinsLen){
+          // Console println "-goto child"
+          counters(cntIdx) = nowCoinLimit
+          next(rest, childIdx, counters, -1, nextAcc)
+        }
+        else if(cntIdx != 0) {
+          // Console println "-back to parent"
+          counters(cntIdx) = 0
+          next(rest, parentIdx, counters, counters(parentIdx) - 1, nextAcc)
+        }
+        else {
+          // Console println ("acc + 1 %d".format(nextAcc))
+          nextAcc
+        }
+      }
+      // back to parent
+      else if(childIdx == coinsLen) {
+        // Console println "back to parent"
+        counters(cntIdx) = 0
+        // Console println counters.toList.toString()
+
+        val notZeroAncCounters = (for(idx <- parentIdx to (0, -1)) yield idx).filter(counters(_) > 0)
+        if(notZeroAncCounters.isEmpty){
+          // Console println "-end1 %d".format(acc)
+          acc
+        }else {
+          val recoverIdx = notZeroAncCounters.head
+          // Console println "recoverIdx : %d".format(recoverIdx)
+          counters(recoverIdx) -= 1
+          next(rest, recoverIdx + 1, counters, -1, acc)
+        }
+      }
+      // goto child
+      else {
+        // Console println "goto child"
+        counters(cntIdx) = nowCoinLimit
+        next(tmpRest, childIdx, counters, -1, acc)
+      }
+
+      // if(counters.reduce((a, b) => a + b) == 0) acc
+      // else if(cntIdx == 0) acc
+      // else
+    }
+
+    next(money, 0, coinCounters, -1, 0)
+  }
+
+}

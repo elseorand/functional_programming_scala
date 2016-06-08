@@ -1,0 +1,84 @@
+package recfun
+
+import scala.annotation.tailrec
+import java.lang.IllegalArgumentException
+
+object Main {
+  def main(args: Array[String]) {
+    println("Pascal's Triangle")
+    for (row <- 0 to 10) {
+      for (col <- 0 to row)
+        print(pascal(col, row) + " ")
+      println()
+    }
+  }
+
+  /**
+   * Exercise 1
+   */
+  def pascal(c: Int, r: Int): Int = {
+    val child: Int = if(r > (c << 1)) c else r - c
+    @tailrec
+    def next(c: Int, r: Int, accC: Int, accR: Int): Int = {
+      if(c == 0) accR / accC
+      else if(c == 1) accR * c / (accC * r)
+      else {
+        val accC2 = accC0 * (c * (c - 1) >> 1)
+        val accR2 = (accR0 * (r * (r - 1)) >> 1)
+
+        next(c - 2, r - 2, accC2, accR2)
+      }
+    }
+
+    val container = new Array
+    
+    next(c, r, 1, 1)
+  }
+
+  def pascal0(c: Int, r: Int): Int = {
+    val child: Int = if(r > (c << 1)) c else r - c
+    // sample factorial(r)(child) / factorial(child)()
+    @tailrec
+    def next(c: Int, r: Int, accC: Int, accR: Int): Int = {
+      if(c == 0) accR / accC
+      else if(c == 1) accR * c / (accC * r)
+      else {
+        val accC2 = accC0 * (c * (c - 1) >> 1)
+        val accR2 = (accR0 * (r * (r - 1)) >> 1)
+
+        next(c - 2, r - 2, accC2, accR2)
+      }
+    }
+
+    next(child, r, 1, 1)
+  }
+
+  def pascal1(c: Int, r: Int): Int = {
+    val child: Int = if(r > (c << 1)) c else r - c
+    factorial(r)(child) / factorial(child)()
+  }
+
+  def factorial(n: Int)(times: Int = n): Int = {
+    // guard
+    if(n < times) throw new IllegalArgumentException(" n > times")
+    else if(n < 0) throw new IllegalArgumentException(" n >= 0")
+
+    @tailrec
+    def next(n: Int, times: Int, acc: Int): Int = times match {
+      case 0 => acc
+      case _ => next(n - 1, times - 1, acc * n)
+    }
+
+    next(n, times, 1)
+  }
+
+  /**
+   * Exercise 2
+   */
+//    def balance(chars: List[Char]): Boolean = ???
+
+  /**
+   * Exercise 3
+   */
+//    def countChange(money: Int, coins: List[Int]): Int = ???
+  }

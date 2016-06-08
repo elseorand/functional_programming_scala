@@ -1,0 +1,26 @@
+(
+ :root-dir "/home/elseorand/workscala/example0"
+ :cache-dir "/home/elseorand/workscala/example0/.ensime_cache"
+ :scala-compiler-jars ("/home/elseorand/.ivy2/cache/org.scala-lang/scala-compiler/jars/scala-compiler-2.11.7.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.7.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scala-reflect/jars/scala-reflect-2.11.7.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scalap/jars/scalap-2.11.7.jar")
+ :name "root"
+ :java-home "/usr/lib/jvm/java-8-oracle"
+ :java-flags ("-Xss2m" "-Dactivator.home=/home/elseorand/activators/activator-1.3.10" "-Xms1024m" "-Xmx1024m" "-XX:ReservedCodeCacheSize=128m" "-XX:MaxMetaspaceSize=256m")
+ :java-compiler-args nil
+ :reference-source-roots ("/usr/lib/jvm/java-8-oracle/src.zip")
+ :scala-version "2.11.7"
+ :compiler-args ("-deprecation" "-feature" "-Xlint" "-Yinline-warnings" "-Yno-adapted-args" "-Ywarn-dead-code" "-Ywarn-numeric-widen" "-Xfuture" "-Ywarn-unused-import" "-Ymacro-expand:discard")
+ :formatting-prefs nil
+ :disable-source-monitoring nil
+ :disable-class-monitoring nil
+ :subprojects ((
+   :name "root"
+   :source-roots ("/home/elseorand/workscala/example0/src/main/scala" "/home/elseorand/workscala/example0/src/test/scala")
+   :targets ("/home/elseorand/workscala/example0/target/scala-2.11/classes")
+   :test-targets ("/home/elseorand/workscala/example0/target/scala-2.11/test-classes")
+   :depends-on-modules nil
+   :compile-deps ("/home/elseorand/.ivy2/cache/org.scala-lang/scala-library/jars/scala-library-2.11.7.jar" "/home/elseorand/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.11/bundles/scala-parser-combinators_2.11-1.0.4.jar" "/home/elseorand/activators/activator-1.3.7/repository/org.scala-lang/scala-reflect/2.11.2/jars/scala-reflect.jar" "/home/elseorand/activators/activator-1.3.7/repository/org.scala-lang.modules/scala-xml_2.11/1.0.2/bundles/scala-xml_2.11.jar" "/home/elseorand/activators/activator-1.3.7/repository/org.scalatest/scalatest_2.11/2.2.4/bundles/scalatest_2.11.jar")
+   :runtime-deps nil
+   :test-deps ("/home/elseorand/activators/activator-1.3.10/repository/org.hamcrest/hamcrest-core/1.1/jars/hamcrest-core.jar" "/home/elseorand/activators/activator-1.3.10/repository/junit/junit/4.10/jars/junit.jar")
+   :doc-jars ("/home/elseorand/.ivy2/cache/junit/junit/docs/junit-4.10-javadoc.jar" "/home/elseorand/workscala/example0/target/scala-2.11/progfun1-example_2.11-0.1-SNAPSHOT-javadoc.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scala-library/docs/scala-library-2.11.7-javadoc.jar" "/home/elseorand/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.11/docs/scala-parser-combinators_2.11-1.0.4-javadoc.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scala-reflect/docs/scala-reflect-2.11.2-javadoc.jar" "/home/elseorand/.ivy2/cache/org.scala-lang.modules/scala-xml_2.11/docs/scala-xml_2.11-1.0.2-javadoc.jar" "/home/elseorand/.ivy2/cache/org.scalatest/scalatest_2.11/docs/scalatest_2.11-2.2.4-javadoc.jar")
+   :reference-source-roots ("/home/elseorand/.ivy2/cache/org.hamcrest/hamcrest-core/srcs/hamcrest-core-1.1-sources.jar" "/home/elseorand/.ivy2/cache/junit/junit/srcs/junit-4.10-sources.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scala-library/srcs/scala-library-2.11.7-sources.jar" "/home/elseorand/.ivy2/cache/org.scala-lang.modules/scala-parser-combinators_2.11/srcs/scala-parser-combinators_2.11-1.0.4-sources.jar" "/home/elseorand/.ivy2/cache/org.scala-lang/scala-reflect/srcs/scala-reflect-2.11.2-sources.jar" "/home/elseorand/.ivy2/cache/org.scala-lang.modules/scala-xml_2.11/srcs/scala-xml_2.11-1.0.2-sources.jar" "/home/elseorand/.ivy2/cache/org.scalatest/scalatest_2.11/srcs/scalatest_2.11-2.2.4-sources.jar")))
+)
