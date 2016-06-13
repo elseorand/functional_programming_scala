@@ -27,6 +27,14 @@ class TweetSetSuite extends FunSuite {
 
   def size(set: TweetSet): Int = asSet(set).size
 
+  test("size") {
+    new TestSets {
+      assert(set1.size() == 0)
+      assert(set2.size() == 1)
+      assert(set4c.size() == 3)
+    }
+  }
+
   test("filter: on empty set") {
     new TestSets {
       assert(size(set1.filter(tw => tw.user == "a")) === 0)
@@ -71,4 +79,5 @@ class TweetSetSuite extends FunSuite {
     }
   }
 
-  }
+
+}
