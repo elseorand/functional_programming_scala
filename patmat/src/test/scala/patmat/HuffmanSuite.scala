@@ -12,12 +12,30 @@ class HuffmanSuite extends FunSuite {
 	trait TestTrees {
 		val t1 = Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5)
 		val t2 = Fork(Fork(Leaf('a',2), Leaf('b',3), List('a','b'), 5), Leaf('d',4), List('a','b','d'), 9)
+    val t3 = List('a', 'b', 'a', 'c', 'a', 'b')
 	}
+
+  test("times of a test data") {
+    new TestTrees {
+      times(t3) foreach (t => t match {
+        case ('a', _) => assert(t._2 == 3)
+        case ('b', _) => assert(t._2 == 2)
+        case ('c', _) => assert(t._2 == 1)
+      })
+    }
+  }
 
 
   test("weight of a larger tree") {
     new TestTrees {
       assert(weight(t1) === 5)
+    }
+  }
+
+  test("extract chars") {
+    new TestTrees {
+      assert(extractsChars(t1) == List('a', 'b'))
+      assert(extractsChars(t2) == List('a', 'b', 'd'))
     }
   }
 
@@ -42,6 +60,37 @@ class HuffmanSuite extends FunSuite {
   test("combine of some leaf list") {
     val leaflist = List(Leaf('e', 1), Leaf('t', 2), Leaf('x', 4))
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
+  }
+
+  test("createcodetree"){
+    new TestTrees {
+      assert(createCodeTree("abbbcc".toList) == Fork(Fork(Leaf('a', 1), Leaf('c', 2), List('a', 'c'), 3), Leaf('b', 3), List('a', 'c', 'b'), 6))
+
+      assert(createCodeTree("bbbacc".toList) == Fork(Fork(Leaf('a', 1), Leaf('c', 2), List('a', 'c'), 3), Leaf('b', 3), List('a', 'c', 'b'), 6))
+
+      assert(createCodeTree("bbbcac".toList) == Fork(Fork(Leaf('a', 1), Leaf('c', 2), List('a', 'c'), 3), Leaf('b', 3), List('a', 'c', 'b'), 6))
+
+      assert(createCodeTree("bbabcc".toList) == Fork(Fork(Leaf('a', 1), Leaf('c', 2), List('a', 'c'), 3), Leaf('b', 3), List('a', 'c', 'b'), 6))
+    }
+  }
+
+  test("decode simple text"){
+    new TestTrees {
+      val test = "aaaaaaaabbbcdefgh".toList
+      val testTree = createCodeTree(test)
+      //Console println "testTree : %s".format(testTree)
+      //1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1,
+      //0, 0, 0, 0, 0, 0, 0 //c
+      //0, 0, 0, 0, 0, 0, 1 //d
+      assert(decode(testTree, List(1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)) == test)
+    }
+  }
+
+  test("encode simple text") {
+    new TestTrees {
+      val res = encode(t1)("ab".toList)
+      Console println "res : %s".format(res)
+    }
   }
 
 

@@ -71,7 +71,7 @@ import org.scalatest.junit.JUnitRunner
    * }}}
    *
    * We recommend to always use the `===` equality operator when writing tests.
-   */
+   */g
   test("details why one plus one is not three") {
     assert(1 + 1 !== 3) // Fix me, please!
   }
