@@ -1,5 +1,6 @@
 package forcomp
 
+import scala.annotation.tailrec
 
 object Anagrams {
 
@@ -46,6 +47,8 @@ object Anagrams {
 
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences = {
+    // guard
+    if(s == Nil) return Nil
     wordOccurrences(s.reduce(_ + _))
   }
 
@@ -59,15 +62,19 @@ object Anagrams {
    *
    *  Incidentally, so do the words "ate" and "tea".
    *
-   *  This means that the `dictionaryByOccurrences` map will contain an entry:
+    *  This means that the `dictionaryByOccurrences` map will contain an entry:
    *
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = ???
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
+    dictionary.groupBy { wordOccurrences }
+  }
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+    dictionaryByOccurrences.getOrElse(wordOccurrences(word), Nil)
+  }
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -91,7 +98,20 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+    @tailrec
+    def go(next: Occurrences, accList: List[Occurrences]): List[Occurrences]= {
+      next match {
+        case (c, num) :: List(_*) => {
+          val nextaccList: List[Occurrences] = List(accList,
+            for(acc <- accList; i <- 1 to num) yield acc :+ (c, i)).flatten
+          go(next.tail, nextaccList)
+        }
+        case _ => accList
+      }
+    }
+    go(occurrences, List(Nil))
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -103,7 +123,12 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    val mapY: Map[Char, Int] = y.toMap
+    x
+      .map {case(c, num) => (c, num - mapY.getOrElse(c, 0))}
+      .filter {case(c, num) => num > 0 }
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -145,5 +170,45 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    // guard
+    if(sentence == Nil) return List(Nil)
+
+    val concatOcc: Occurrences = sentenceOccurrences(sentence)
+
+    def generateAllCombinations(occ: Occurrences, acc: List[Occurrences], result: List[List[Occurrences]]): List[List[Occurrences]] = {
+      // guard
+      if(occ == Nil) return result
+      combinations(occ)
+        .filter(x => x != Nil && dictionaryByOccurrences.contains(x))
+        .flatMap { x =>
+          val complement = subtract (occ, x)
+          val nextAcc = (acc :+ x)
+          complement match {
+            case (c, num) :: List(_*) => generateAllCombinations(complement, nextAcc, result)
+            case _ => result :+ nextAcc
+          }
+        }
+    }
+
+    val allCombinationsFromOriginal = generateAllCombinations(concatOcc, Nil, Nil)
+    val allPossibleWords: List[List[List[Word]]] = allCombinationsFromOriginal
+      .map { _.map (dictionaryByOccurrences.getOrElse(_, Nil))}
+    Console println s"allPossibleWords : $allPossibleWords"
+
+
+    @tailrec
+    def go(wordListList: List[List[Word]], accList: List[List[Word]]): List[List[Word]] = {
+      // guard
+      if(wordListList == Nil) return accList
+
+      val wordCandidates: List[Word] = wordListList.head
+      val nextAccList = if (accList == Nil) wordCandidates.map(List(_))
+      else (for(word <- wordCandidates ) yield accList.map(_ :+ word)).flatten
+
+      go(wordListList.tail, nextAccList)
+    }
+
+    allPossibleWords.flatMap (x => go(x, Nil))
+  }
 }
